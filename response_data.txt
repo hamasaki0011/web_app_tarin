@@ -1,0 +1,18 @@
+HTTP/1.1 200 OK
+Date: Tue, 22 Aug 2023 00:36:39 GMT
+Host: TestServer/0.1
+Content-Length: 213
+Connection: Close
+Content-Type: text/html
+
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Test_Server</title>
+</head>
+<body>
+    <h1>Welcome to Test_Server</h1>
+    <P>Python仮想環境から立ち上げ!</p>
+</body>
+</html>

@@ -1,0 +1,25 @@
+HTTP/1.1 200 OK
+Date: Tue, 22 Aug 2023 23:59:09 GMT
+Host: Test_Server/0.1
+Content-Length: 430
+Connection: Close
+Content-Type: text/html
+
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Test_Server</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <h1>This is Train_Server</h1>
+    <img alt="logo" src="logo.png">
+    <P>
+        It in Python virtual environment<br>
+        2023.8.22 It had done refactoring<br>
+        2023.8.23 Confirm again<br>
+        2023.8.23 Define PORT as const<br>
+    </p>
+</body>
+</html>
