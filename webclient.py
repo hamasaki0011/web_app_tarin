@@ -6,8 +6,8 @@ from typing import Tuple
 HOST = "127.0.0.1"
 PORT = 8080
 METHOD = "GET"
-PATH = "/index.html"
-HTML_VERSION = "HTTP/1.1"
+PATH = "/show_request"   #"/now"   #"/index.html"
+HTML_VERSION = "HTTP/1.1" 
 
 class TCPClient:
     """
