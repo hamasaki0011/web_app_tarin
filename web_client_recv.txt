@@ -1,36 +1,49 @@
-HTTP/1.1 200 OK
-Date: Wed, 23 Aug 2023 08:05:07 GMT
-Host: Test_Server/0.1
-Content-Length: 1179
-Connection: Close
+HTTP/1.1 403 Forbidden
+Server: nginx/1.21.6
+Date: Thu, 24 Aug 2023 07:55:25 GMT
 Content-Type: text/html
+Content-Length: 1627
+Connection: keep-alive
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
 
-                   <html>
-                   <body>
-                       <h1>Request Line:</h1>
-                       <p>
-                           GET /show_request HTTP/1.1
-                       </p>
-                       <h1>Headers:</h1>
-                       <pre>{'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-'Accept-Encoding': 'gzip, deflate, br',
-'Accept-Language': 'ja,en-US;q=0.9,en;q=0.8',
-'Cache-Control': 'max-age=0',
-'Connection': 'keep-alive',
-'Host': 'TestServer/0.1',
-'Sec-Fetch-Dest': 'document',
-'Sec-Fetch-Mode': 'navigate',
-'Sec-Fetch-Site': 'none',
-'Sec-Fetch-User': '?1',
-'Upgrade-Insecure-Requests': '1',
-'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
-              '(KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
-'sec-ch-ua': "'Chromium';v='116', 'Not)A;Brand';v='24', 'Google "
-             "Chrome';v='116'",
-'sec-ch-ua-mobile': '?0',
-'sec-ch-ua-platform': "'Windows'"}</pre>
-                       <h1>Body:</h1>
-                       <pre></pre>
 
-                   </body>
-                   </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="robots" content="NONE,NOARCHIVE">
+  <title>403 Forbidden</title>
+  <style type="text/css">
+    html * { padding:0; margin:0; }
+    body * { padding:10px 20px; }
+    body * * { padding:0; }
+    body { font:small sans-serif; background:#eee; color:#000; }
+    body>div { border-bottom:1px solid #ddd; }
+    h1 { font-weight:normal; margin-bottom:.4em; }
+    h1 span { font-size:60%; color:#666; font-weight:normal; }
+    #info { background:#f6f6f6; }
+    #info ul { margin: 0.5em 4em; }
+    #info p, #summary p { padding-top:10px; }
+    #summary { background: #ffc; }
+    #explanation { background:#eee; border-bottom: 0px none; }
+  </style>
+</head>
+<body>
+<div id="summary">
+  <h1>アクセス禁止 <span>(403)</span></h1>
+  <p>CSRF検証に失敗したため、リクエストは中断されました。</p>
+
+
+  <p>このメッセージが表示されている理由は、このサイトはフォーム送信時にCSRFクッキーを必須としているためです。このクッキーはセキュリティ上の理由(使用中のブラウザが第三者によってハイジャックされていないことを確認するため)で必要です。</p>
+  <p>もしブラウザのクッキーを無効に設定しているならば、same-originリクエストのために少なくともこのサイトでは再度有効にしてください。</p>
+
+</div>
+
+<div id="explanation">
+  <p><small>詳細な情報は DEBUG=True を設定すると利用できます。</small></p>
+</div>
+
+</body>
+</html>

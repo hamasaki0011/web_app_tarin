@@ -2,8 +2,9 @@ import os
 import re
 import textwrap
 import traceback
+import urllib.parse # for POST method 
 from datetime import datetime
-from pprint import pformat
+from pprint import pformat  # リストや辞書を整形して出力する'pprint'を使用する
 from socket import socket
 from threading import Thread
 from typing import Tuple, Optional
@@ -17,7 +18,7 @@ class WorkerThread(Thread):
     
     # 拡張子とMIME Typeの対応
     MIME_TYPES = {
-        "html": "text/html",
+        "html": "text/html; charset=UTF-8",
         "css": "text/css",
         "png": "image/png",
         "jpg": "image/jpg",
@@ -56,42 +57,69 @@ class WorkerThread(Thread):
                 html = f"""\
                     <html>
                     <body>
-                        <h1>Now: {datetime.now()}</h1>
+                        <h1>日付と現在時刻: {datetime.now()}</h1>
                     </body>
                     </html>
                 """
                 response_body = textwrap.dedent(html).encode()
 
                 # Content-Typeを指定
-                content_type = "text/html"
+                content_type = "text/html; charset=UTF-8"
 
                 # レスポンスラインを生成
                 response_line = "HTTP/1.1 200 OK\r\n"
                 
             # pathが/show_requestのときは、HTTPリクエストの内容を表示するHTMLを生成する
             elif path == "/show_request":
-                html = f"""\
-                    <html>
-                    <body>
-                        <h1>Request Line:</h1>
-                        <p>
-                            {method} {path} {http_version}
-                        </p>
-                        <h1>Headers:</h1>
-                        <pre>{pformat(request_header)}</pre>
-                        <h1>Body:</h1>
-                        <pre>{request_body.decode("utf-8", "ignore")}</pre>
+                html = f"""<html><body><h1>Request Line:</h1><p>{method} {path} {http_version}
+                </p><h1>Headers:</h1><pre>{pformat(request_header)}</pre><h1>Body:</h1>
+                <pre>{request_body.decode("utf-8", "ignore")}</pre></body></html>"""
+                # html = f"""\
+                #     <html>
+                #     <body>
+                #         <h1>Request Line:</h1>
+                #         <p>
+                #             {method} {path} {http_version}
+                #         </p>
+                #         <h1>Headers:</h1>
+                #         <pre>{pformat(request_header)}</pre>
+                #         <h1>Body:</h1>
+                #         <pre>{request_body.decode("utf-8", "ignore")}</pre>
                         
-                    </body>
-                    </html>
-                """
+                #     </body>
+                #     </html>
+                # """
                 response_body = textwrap.dedent(html).encode()
 
                 # Content-Typeを指定
-                content_type = "text/html"
+                content_type = "text/html; charset=UTF-8"
 
                 # レスポンスラインを生成
-                response_line = "HTTP/1.1 200 OK\r\n"            
+                response_line = "HTTP/1.1 200 OK\r\n"
+                
+            elif path == "/parameters":
+                if method == "GET":
+                    response_body = b"<html><body><h1>405 Method Not Allowed</h1></body></html>"
+                    content_type = "text/html; charset=UTF-8"
+                    response_line = "HTTP/1.1 405 Method Not Allowed\r\n"
+
+                elif method == "POST":
+                    post_params = urllib.parse.parse_qs(request_body.decode())
+                    html = f"""\
+                        <html>
+                        <body>
+                            <h1>Parameters:</h1>
+                            <pre>{pformat(post_params)}</pre>                        
+                        </body>
+                        </html>
+                    """
+                    response_body = textwrap.dedent(html).encode()
+
+                    # Content-Typeを指定
+                    content_type = "text/html; charset=UTF-8"
+
+                    # レスポンスラインを生成
+                    response_line = "HTTP/1.1 200 OK\r\n"                            
 
             # pathがそれ以外のときは、静的ファイルからレスポンスを生成する
             else:
@@ -110,7 +138,7 @@ class WorkerThread(Thread):
                     traceback.print_exc()
                     
                     response_body = b"<html><body><h1>404 Not Found</h1></body></html>"
-                    content_type = "text/html"
+                    content_type = "text/html; charset=UTF-8"
                     response_line = "HTTP/1.1 404 Not Found\r\n"
                 
             # レスポンスヘッダーを生成
@@ -139,7 +167,7 @@ class WorkerThread(Thread):
         1. method: str
         2. path: str
         3. http_version: str
-        4. request_header: bytes
+        4. request_header: dict
         5. request_body: bytes
         に分割/変換する
         """

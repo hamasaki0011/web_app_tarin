@@ -1,12 +1,13 @@
-import socket
+import socket   # Socket
+import re       # 正規表現
 import sys
 import traceback
 from typing import Tuple
 
-HOST = "127.0.0.1"
-PORT = 8080
-METHOD = "GET"
-PATH = "/show_request"   #"/now"   #"/index.html"
+HOST = "10.10.210.87"   #"httpbin.org"   #"127.0.0.1"
+PORT = 80
+METHOD = "POST"  #"GET"
+PATH = "/record/record/article/"   #"/form.html"  #"/show_request"   #"/now"   #"/index.html"
 HTML_VERSION = "HTTP/1.1" 
 
 class TCPClient:
@@ -22,7 +23,6 @@ class TCPClient:
         try:
             # client_socketを生成
             client_socket = self.create_client_socket()
-            
             # リクエスト(request_line + request_header)を生成してサーバーに送る
             request_header = self.build_request_handler(METHOD, PATH, HTML_VERSION)
             # ヘッダーをbytesに変換し、リクエストを生成する
@@ -30,21 +30,28 @@ class TCPClient:
             request = (request_header + "\r\n").encode()    
             # サーバーへリクエストを送信する
             client_socket.send(request) # type: ignore
-
             # サーバーからレスポンスが送られてくるのを待って取得する
             response = client_socket.recv(4096) # type: ignore
             # レスポンスの内容を、ファイルに書き出す
             with open("web_client_recv.txt", "wb") as f:
                 f.write(response)
             
+            # @2023.8.23 for debugging print("response= ",response)
             # #　レスポンス全体を解析する
-            status_code, code_remark, date, host = self.parse_http_response(response)
+            html_version, code_status, code_remark, header = self.parse_http_response(response)
             
-            if status_code == "200" and code_remark == "OK":
-                print(f"=== <{METHOD}>メソッドで",end='')
-                print(f"≪ {host} ≫ に接続しました ===")
-                print(f"=== {date} ===")                  
             #　レスポンスの内容をコンソールに表示する
+            if code_status == "200" and code_remark == "OK":
+                print(f"=== <{METHOD}>メソッドで",end='')
+                print(f"≪ {HOST} ≫ に接続しました@", end='')
+                print(f"{header['Date']} ===")                  
+            
+            elif code_status == "404":
+                print("=== 指定されたサイトが見つかりません ===")
+                
+            elif code_status == "405":
+                print("=== 指定されたサイトにアクセスできません ===")
+    
             else:
                 print("=== 指定されたサイトへの接続は失敗しました ===")
                     
@@ -85,16 +92,18 @@ class TCPClient:
             request_line = method + " " + path + " " + html_version + "\r\n"
             
             # requestヘッダーを生成
+            # 「Cache-Control: max-age=0」を加えると、レスポンスが遅くなる。
             request_header = ""
-            request_header += "Host: TestServer/0.1\r\n"
+            # request_header += "Host: TestServer/0.1\r\n"
+            request_header += "Host: " + HOST + "\r\n"
             request_header += "Connection: keep-alive\r\n"
-            request_header += "Cache-Control: max-age=0\r\n"
+            # request_header += "Cache-Control: max-age=100\r\n"
             request_header += "sec-ch-ua: 'Chromium';v='116', 'Not)A;Brand';v='24', 'Google Chrome';v='116'\r\n"
             request_header += "sec-ch-ua-mobile: ?0\r\n"
             request_header += "sec-ch-ua-platform: 'Windows'\r\n"
             request_header += "Upgrade-Insecure-Requests: 1\r\n"
             request_header += "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36\r\n"
-            request_header += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7\r\n"
+            request_header += "Accept: text/html,application/xhtm”l+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7\r\n"
             request_header += "Sec-Fetch-Site: none\r\n"
             request_header += "Sec-Fetch-Mode: navigate\r\n"
             request_header += "Sec-Fetch-User: ?1\r\n"
@@ -104,27 +113,36 @@ class TCPClient:
             
             return request_line + request_header
         
-    def parse_http_response(self, response:bytes) -> Tuple[str, str, str, str]:
+    def parse_http_response(self, response:bytes) -> Tuple[str, str, str, dict]:
             #　レスポンス全体を解析する
             #　①行目　レスポンスライン
             #　②行目～レスポンスヘッダー
             #　③行目～空行～ボディ
             response_line, remain = response.split(b"\r\n",maxsplit=1)
+            # レスポンスラインをHTMLバージョン、コード、コメントの3つに分割する
+            version, code, remark = response_line.decode().split(" ",maxsplit=2)
+            # for debugging@2023.8.24 print("remark= ", remark)
+            
+            # レスポンスヘッダーを抜き出す
             response_header, response_body = remain.split(b"\r\n\r\n", maxsplit=1)
+            # レスポンスヘッダーを辞書にパースする
+            headers = {}
+            for header_row in response_header.decode().split("\r\n"):
+                # response_headerをデコードして、一行毎読み込む
+                # 各行に対して１つの':'と0個以上の空白を表す正規表現で分割して、keyとvalueを取得して
+                key, value = re.split(r": *", header_row, maxsplit=1)
+                # 取得したkeyとvalueで辞書型に変換
+                headers[key] = value 
             
-            # レスポンスラインを解析
-            http_version, status_code, code_remark = response_line.decode().split(" ")
-
-            date, host, content_length, connection, content_type = response_header.decode().split("\r\n")
-            temp,host = host.split(" ")
+            # print(headers)
+            # print(f"ヘッダーの項目数は、{len(headers)}個")
+            # print("日付けは ",Date)
+            # print("ホストは ",Host)
+            # print("長さは ",Content-length)
+            # print("接続は ",Connection)
+            # print("タイプは ",Content-type)
             
-            # print("日付けは ",date)
-            # print("ホストは ",host)
-            # print("長さは ",content_length)
-            # print("接続は ",connection)
-            # print("タイプは ",content_type)
-            
-            return status_code, code_remark, date, host 
+            return version, code, remark, headers 
 
 
 if __name__ == '__main__':
