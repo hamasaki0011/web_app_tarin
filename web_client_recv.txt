@@ -1,5 +1,5 @@
 HTTP/1.1 200 OK
-Date: Fri, 25 Aug 2023 06:06:54 GMT
+Date: Fri, 25 Aug 2023 07:05:33 GMT
 Host: Test_Server/0.1
 Content-Length: 93
 Connection: Close
@@ -7,6 +7,6 @@ Content-Type: text/html; charset=UTF-8
 
 <html>
 <body>
-    <h1>日付と現在時刻: 2023-08-25 15:06:54.627598</h1>
+    <h1>日付と現在時刻: 2023-08-25 16:05:33.846856</h1>
 </body>
 </html>

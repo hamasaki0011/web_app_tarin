@@ -110,4 +110,4 @@ def parameters(request: HTTPRequest) -> HTTPResponse:
         status_code = 200
         
     # return response_body, content_type, response_line
-    return HTTPResponse(body=body, content_type=content_type, status_code=status_code)
+    return HTTPResponse(body=body, content_type=content_type, status_code=status_code)  # type: ignore

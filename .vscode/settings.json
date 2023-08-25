@@ -4,6 +4,8 @@
         "httpbin",
         "KHTML",
         "nosniff",
-        "reshost"
+        "reshost",
+        "webp",
+        "xhtm"
     ]
 }

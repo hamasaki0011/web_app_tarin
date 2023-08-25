@@ -17,9 +17,14 @@ req_header = {
     # "METHOD": "POST",         # "GET"
     # "PATH": "/post",          # "/get"
     
+    # "HOST": "127.0.0.1",        # "10.10.210.87"
+    # "PORT": 8080,               # 8000
+    # "METHOD": "GET",            # "POST"
+    # "PATH": "/now",      # "/form.html" "/show_request" "/now" "/index.html" 
+
     "HOST": "127.0.0.1",        # "10.10.210.87"
     "PORT": 8080,               # 8000
-    "METHOD": "GET",            # "POST"
+    "METHOD": "POST",            # "POST"
     "PATH": "/now",      # "/form.html" "/show_request" "/now" "/index.html" 
     
     "VERSION": "HTTP/1.1",      # HTTP version
@@ -55,7 +60,7 @@ class TCPClient:
             # @2023.8.23 for debugging print("response= ",response)
             # #　レスポンス全体を解析する
             html_version, code_status, code_remark, header = self.parse_http_response(response)
-            
+          
             #　レスポンスの内容をコンソールに表示する
             if code_status == "200" and code_remark == "OK":
                 print(f"=== <{req_header['METHOD']}>メソッドで",end='')
@@ -159,7 +164,6 @@ class TCPClient:
             # print("タイプは ",Content-type)
             
             return version, code, remark, headers 
-
 
 if __name__ == '__main__':
     client = TCPClient()
