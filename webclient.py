@@ -4,11 +4,27 @@ import sys
 import traceback
 from typing import Tuple
 
-HOST = "10.10.210.87"   #"httpbin.org"   #"127.0.0.1"
-PORT = 80
-METHOD = "POST"  #"GET"
-PATH = "/record/record/article/"   #"/form.html"  #"/show_request"   #"/now"   #"/index.html"
-HTML_VERSION = "HTTP/1.1" 
+# HOST = "httpbin.org"    #"10.10.210.87"   #"127.0.0.1"
+# PORT = 80
+# METHOD = "POST"  #"GET"
+# PATH = "/post"   #"/record/record/article/"   #"/form.html"  #"/show_request"   #"/now"   #"/index.html"
+# HTML_VERSION = "HTTP/1.1"
+
+# Request headers
+req_header = {
+    # "HOST": "httpbin.org",    # Request method test site
+    # "PORT": 80,               # default port number
+    # "METHOD": "POST",         # "GET"
+    # "PATH": "/post",          # "/get"
+    
+    "HOST": "127.0.0.1",        # "10.10.210.87"
+    "PORT": 8080,               # 8000
+    "METHOD": "GET",            # "POST"
+    "PATH": "/now",      # "/form.html" "/show_request" "/now" "/index.html" 
+    
+    "VERSION": "HTTP/1.1",      # HTTP version
+    
+    }
 
 class TCPClient:
     """
@@ -24,7 +40,7 @@ class TCPClient:
             # client_socketを生成
             client_socket = self.create_client_socket()
             # リクエスト(request_line + request_header)を生成してサーバーに送る
-            request_header = self.build_request_handler(METHOD, PATH, HTML_VERSION)
+            request_header = self.build_request_handler(req_header['METHOD'], req_header['PATH'], req_header['VERSION'])
             # ヘッダーをbytesに変換し、リクエストを生成する
             #request = (request_line + request_header + "\r\n").encode() + request_body
             request = (request_header + "\r\n").encode()    
@@ -42,15 +58,15 @@ class TCPClient:
             
             #　レスポンスの内容をコンソールに表示する
             if code_status == "200" and code_remark == "OK":
-                print(f"=== <{METHOD}>メソッドで",end='')
-                print(f"≪ {HOST} ≫ に接続しました@", end='')
+                print(f"=== <{req_header['METHOD']}>メソッドで",end='')
+                print(f"≪ {req_header['HOST']} ≫ に接続しました@", end='')
                 print(f"{header['Date']} ===")                  
             
             elif code_status == "404":
-                print("=== 指定されたサイトが見つかりません ===")
+                print("=== Not Found: 指定されたサイトが見つかりません ===")
                 
             elif code_status == "405":
-                print("=== 指定されたサイトにアクセスできません ===")
+                print("=== Method Not Allowed: 指定されたサイトにアクセスできません ===")
     
             else:
                 print("=== 指定されたサイトへの接続は失敗しました ===")
@@ -60,7 +76,7 @@ class TCPClient:
         
         except  ConnectionRefusedError:
             # ポート番号指定違いで接続拒否
-            print(f"=== 'http://{HOST}:{PORT}{PATH}'に接続拒否されました！ ===")
+            print(f"=== 'http://{req_header['HOST']}:{req_header['PORT']}{req_header['PATH']}'に接続拒否されました！ ===")
             # 2023.8.23　後でlogファイル作成に書き換える
             #traceback.print_exc()
             
@@ -78,7 +94,7 @@ class TCPClient:
         
         # サーバーと接続する 8080
         #print("=== サーバーと接続します ===")
-        client_socket.connect((HOST, PORT)) # 127.0.0.1
+        client_socket.connect((req_header['HOST'], req_header['PORT']))
         print("=== サーバーと接続しました ======")
         return client_socket # type: ignore
                     
@@ -95,7 +111,7 @@ class TCPClient:
             # 「Cache-Control: max-age=0」を加えると、レスポンスが遅くなる。
             request_header = ""
             # request_header += "Host: TestServer/0.1\r\n"
-            request_header += "Host: " + HOST + "\r\n"
+            request_header += "Host: " + req_header['HOST'] + "\r\n"
             request_header += "Connection: keep-alive\r\n"
             # request_header += "Cache-Control: max-age=100\r\n"
             request_header += "sec-ch-ua: 'Chromium';v='116', 'Not)A;Brand';v='24', 'Google Chrome';v='116'\r\n"

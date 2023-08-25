@@ -1,49 +1,12 @@
-HTTP/1.1 403 Forbidden
-Server: nginx/1.21.6
-Date: Thu, 24 Aug 2023 07:55:25 GMT
-Content-Type: text/html
-Content-Length: 1627
-Connection: keep-alive
-X-Frame-Options: DENY
-X-Content-Type-Options: nosniff
-Referrer-Policy: same-origin
+HTTP/1.1 200 OK
+Date: Fri, 25 Aug 2023 06:06:54 GMT
+Host: Test_Server/0.1
+Content-Length: 93
+Connection: Close
+Content-Type: text/html; charset=UTF-8
 
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <meta name="robots" content="NONE,NOARCHIVE">
-  <title>403 Forbidden</title>
-  <style type="text/css">
-    html * { padding:0; margin:0; }
-    body * { padding:10px 20px; }
-    body * * { padding:0; }
-    body { font:small sans-serif; background:#eee; color:#000; }
-    body>div { border-bottom:1px solid #ddd; }
-    h1 { font-weight:normal; margin-bottom:.4em; }
-    h1 span { font-size:60%; color:#666; font-weight:normal; }
-    #info { background:#f6f6f6; }
-    #info ul { margin: 0.5em 4em; }
-    #info p, #summary p { padding-top:10px; }
-    #summary { background: #ffc; }
-    #explanation { background:#eee; border-bottom: 0px none; }
-  </style>
-</head>
+<html>
 <body>
-<div id="summary">
-  <h1>アクセス禁止 <span>(403)</span></h1>
-  <p>CSRF検証に失敗したため、リクエストは中断されました。</p>
-
-
-  <p>このメッセージが表示されている理由は、このサイトはフォーム送信時にCSRFクッキーを必須としているためです。このクッキーはセキュリティ上の理由(使用中のブラウザが第三者によってハイジャックされていないことを確認するため)で必要です。</p>
-  <p>もしブラウザのクッキーを無効に設定しているならば、same-originリクエストのために少なくともこのサイトでは再度有効にしてください。</p>
-
-</div>
-
-<div id="explanation">
-  <p><small>詳細な情報は DEBUG=True を設定すると利用できます。</small></p>
-</div>
-
+    <h1>日付と現在時刻: 2023-08-25 15:06:54.627598</h1>
 </body>
 </html>
