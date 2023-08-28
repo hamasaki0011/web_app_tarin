@@ -25,7 +25,7 @@ req_header = {
     "HOST": "127.0.0.1",        # "10.10.210.87"
     "PORT": 8080,               # 8000
     "METHOD": "POST",            # "POST"
-    "PATH": "/now",      # "/form.html" "/show_request" "/now" "/index.html" 
+    "PATH": "/index.html",      # "/form.html" "/show_request" "/now" "/index.html" 
     
     "VERSION": "HTTP/1.1",      # HTTP version
     

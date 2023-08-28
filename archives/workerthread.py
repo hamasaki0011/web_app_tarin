@@ -13,7 +13,7 @@ from typing import Tuple
 import views
 from common.http.request import HTTPRequest
 from common.http.response import HTTPResponse
-from urls import URL_VIEW
+from urls import URL_VIEW # type: ignore
 
 class WorkerThread(Thread):
     # 実行ファイルのあるディレクトリ

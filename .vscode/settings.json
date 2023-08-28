@@ -6,6 +6,7 @@
         "nosniff",
         "reshost",
         "webp",
+        "webserver",
         "xhtm"
     ]
 }

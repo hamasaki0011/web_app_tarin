@@ -44,7 +44,3 @@ class WebServer:
         server_socket.bind(("localhost", PORT))
         server_socket.listen(10)
         return server_socket # type: ignore
-    
-if __name__ == '__main__':
-    server = WebServer()
-    server.serve()
