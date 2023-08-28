@@ -5,7 +5,6 @@ import settings
 from common.http.request import HTTPRequest
 from common.http.response import HTTPResponse
 
-
 def static(request: HTTPRequest) -> HTTPResponse:
     """
     静的ファイルからレスポンスを取得する

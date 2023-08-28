@@ -4,12 +4,6 @@ import sys
 import traceback
 from typing import Tuple
 
-# HOST = "httpbin.org"    #"10.10.210.87"   #"127.0.0.1"
-# PORT = 80
-# METHOD = "POST"  #"GET"
-# PATH = "/post"   #"/record/record/article/"   #"/form.html"  #"/show_request"   #"/now"   #"/index.html"
-# HTML_VERSION = "HTTP/1.1"
-
 # Request headers
 req_header = {
     # "HOST": "httpbin.org",    # Request method test site
@@ -24,8 +18,8 @@ req_header = {
 
     "HOST": "127.0.0.1",        # "10.10.210.87"
     "PORT": 8080,               # 8000
-    "METHOD": "POST",            # "POST"
-    "PATH": "/index.html",      # "/form.html" "/show_request" "/now" "/index.html" 
+    "METHOD": "GET",            # "POST"
+    "PATH": "/user_profile.html",      # "/form.html" "/show_request" "/now" "/index.html" 
     
     "VERSION": "HTTP/1.1",      # HTTP version
     

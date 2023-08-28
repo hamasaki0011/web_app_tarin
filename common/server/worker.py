@@ -12,7 +12,7 @@ from threading import Thread
 from typing import Tuple
 
 # import views
-import settings
+# import settings
 from common.http.request import HTTPRequest
 from common.http.response import HTTPResponse
 from common.urls.resolver import URLResolver
@@ -86,6 +86,7 @@ class Worker(Thread):
             """
             # URL解決を行う
             view = URLResolver().resolve(request)
+            
             # レスポンスを生成する
             response = view(request)
             
@@ -116,7 +117,15 @@ class Worker(Thread):
             #         content_type = "text/html; charset=UTF-8"
             #         # response_line = "HTTP/1.1 404 Not Found\r\n"
             #         response = HTTPResponse(body=response_body, content_type=content_type, status_code=404)
+            
+            # レスポンスを生成する
+            response = view(request)
 
+            # レスポンスボディを変換
+            # 実際のHTTPレスポンスを生成する処理の直前に、bodyがstr型だったらbytes型へ変換する
+            if isinstance(response.body, str):
+                response.body = response.body.encode()
+                            
             # レスポンスラインを生成
             response_line = self.build_response_line(response)
             # レスポンスヘッダーを生成
@@ -210,12 +219,18 @@ class Worker(Thread):
             if "." in request.path:
                 # ext = path.rsplit(".", maxsplit=1)[-1]
                 ext = request.path.rsplit(".", maxsplit=1)[-1]
+                # 拡張子からMIME Typeを取得
+                # 知らない対応していない拡張子の場合はoctet-streamとする
+                response.content_type = self.MIME_TYPES.get(ext, "application/octet-stream")
             else:
-                ext = ""
+                # ext = ""
+                # pathに拡張子がない場合はhtml扱いとする
+                response.content_type = "text/html; charset=UTF-8"
+                
             # 拡張子からMIME Typeを取得
             # 知らない対応していない拡張子の場合はoctet-streamとする
             # content_type = self.MIME_TYPES.get(ext, "application/octet-stream")
-            response.content_type = self.MIME_TYPES.get(ext, "application/octet-stream")
+            # response.content_type = self.MIME_TYPES.get(ext, "application/octet-stream")
 
         response_header = ""
         response_header += f"Date: {datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')}\r\n"
