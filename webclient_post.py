@@ -1,25 +1,26 @@
 import socket   # Socket
 import re       # 正規表現
-import sys
-import traceback
+#import sys
+#import traceback
 from typing import Tuple
+
+from common.http.request import HTTPRequest
+from common.http.response import HTTPResponse
 
 # Request headers
 req_header = {
     # "HOST": "httpbin.org",    # Request method test site
     # "PORT": 80,               # default port number
-    # "METHOD": "POST",         # "GET"
     # "PATH": "/post",          # "/get"
     
     # "HOST": "127.0.0.1",        # "10.10.210.87"
     # "PORT": 8080,               # 8000
-    # "METHOD": "GET",            # "POST"
     # "PATH": "/now",      # "/form.html" "/show_request" "/now" "/index.html" 
 
     "HOST": "127.0.0.1",        # "10.10.210.87"
     "PORT": 8080,               # 8000
-    "METHOD": "GET",            # "POST"
-    "PATH": "/index.html",      # "/form.html" "/show_request" "/now" "/index.html" 
+    "METHOD": "POST",            # "POST"
+    "PATH": "/form.html",      # "/form.html" "/show_request" "/now" "/index.html" 
     
     "VERSION": "HTTP/1.1",      # HTTP version
     }
@@ -30,7 +31,7 @@ class TCPClient:
     サーバーへリクエストを送信する
     """
     def request(self):
-
+ 
         print("=== クライアントを起動します ===")
 
         """_summary_
@@ -44,16 +45,29 @@ class TCPClient:
             request_header = self.build_request_handler(req_header['METHOD'], req_header['PATH'], req_header['VERSION'])
             # ヘッダーをbytesに変換し、リクエストを生成する
             #request = (request_line + request_header + "\r\n").encode() + request_body
-            request = (request_header + "\r\n").encode()    
+            request = (request_header + "\r\n").encode()
+            # リクエストの内容を、ファイルに書き出す
+            with open("web_post_client_send.txt", "wb") as f:
+                f.write(request)
+                
+            # # 2023.8.23 request_bodyを生成するケースを考慮してコメントとして残す
+            # # ファイルからrequest_bodyを生成する
+            # with open("web_client_request_body.txt", "rb") as f:
+            #     request_body = f.read()
+        
+            # print("request_body = ",request_body.decode())
+                
             # サーバーへリクエストを送信する
             client_socket.send(request) # type: ignore
             
             # サーバーからレスポンスが送られてくるのを待って取得する
             response = client_socket.recv(4096) # type: ignore
             # レスポンスの内容を、ファイルに書き出す
-            with open("web_client_recv.txt", "wb") as f:
-                f.write(response)
-            
+            with open("web_post_client_recv.txt", "wb") as f:
+                f.write(response)        
+                
+
+                
             # @2023.8.23 for debugging print("response= ",response)
             # #　レスポンス全体を解析する
             html_version, code_status, code_remark, header = self.parse_http_response(response)
@@ -63,13 +77,10 @@ class TCPClient:
                 print(f"=== <{req_header['METHOD']}>メソッドで",end='')
                 print(f"≪ {req_header['HOST']} ≫ に接続しました@", end='')
                 print(f"{header['Date']} ===")                  
-            
             elif code_status == "404":
                 print("=== Not Found: 指定されたサイトが見つかりません ===")
-                
             elif code_status == "405":
                 print("=== Method Not Allowed: 指定されたサイトにアクセスできません ===")
-    
             else:
                 print("=== 指定されたサイトへの接続は失敗しました ===")
                     
@@ -101,11 +112,8 @@ class TCPClient:
         return client_socket # type: ignore
                     
     def build_request_handler(self, method: str, path: str, html_version: str):
-        # 2023.8.23 request_bodyを生成するケースを考慮してコメントとして残す
-        # ファイルからrequest_bodyを生成する
-        #　with open("web_client_send.txt", "rb") as f:
-        #   request_body = f.read()
-                    
+
+ 
         # request_lineを生成
         request_line = method + " " + path + " " + html_version + "\r\n"
             
@@ -129,8 +137,8 @@ class TCPClient:
         request_header += "Sec-Fetch-Dest: document\r\n"
         request_header += "Accept-Encoding: gzip, deflate, br\r\n"
         request_header += "Accept-Language: ja,en-US;q=0.9,en;q=0.8\r\n"
-            
-        return request_line + request_header
+                    
+        return request_line + request_header +"\r\n"
         
     def parse_http_response(self, response:bytes) -> Tuple[str, str, str, dict]:
         #　レスポンス全体を解析する

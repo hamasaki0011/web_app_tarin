@@ -1,14 +1,14 @@
 import os
 import traceback
-
 import settings
 from common.http.request import HTTPRequest
 from common.http.response import HTTPResponse
 
+"""
+静的ファイルからレスポンスを取得する
+見つからなかったときは、404 Not Found を返す
+"""
 def static(request: HTTPRequest) -> HTTPResponse:
-    """
-    静的ファイルからレスポンスを取得する
-    """
 
     try:
         static_root = getattr(settings, "STATIC_ROOT")

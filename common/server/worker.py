@@ -1,4 +1,4 @@
-import os
+#import os
 import re
 # import textwrap
 import traceback
@@ -12,7 +12,7 @@ from threading import Thread
 from typing import Tuple
 
 # import views
-# import settings
+#import settings
 from common.http.request import HTTPRequest
 from common.http.response import HTTPResponse
 from common.urls.resolver import URLResolver
@@ -38,9 +38,11 @@ class Worker(Thread):
     # URL_VIEW = {"/now": views.now, "/show_request": views.show_request, "/parameters": views.parameters, }
     """
     
-        # ステータスコードとステータスラインの対応
+    # ステータスコードとステータスラインの対応
     STATUS_LINES = {
         200: "200 OK",
+        # 302は一時的なリダイレクトを意味し、ブラウザはLocationヘッダーで指定されたURLへ再度リクエストをし直してくれる。
+        302: "302 Found",
         404: "404 Not Found",
         405: "405 Method Not Allowed",
     }
@@ -66,6 +68,7 @@ class Worker(Thread):
 
             # HTTPリクエストをパースする
             # method, path, http_version, request_header, request_body = self.parse_http_request(request)
+            # 2023.8.30 for confirmation print("request_bytes = ", request_bytes)
             request = self.parse_http_request(request_bytes)
             
             """_summary_
@@ -117,20 +120,19 @@ class Worker(Thread):
             #         content_type = "text/html; charset=UTF-8"
             #         # response_line = "HTTP/1.1 404 Not Found\r\n"
             #         response = HTTPResponse(body=response_body, content_type=content_type, status_code=404)
-            
-            # レスポンスを生成する
-            response = view(request)
 
             # レスポンスボディを変換
             # 実際のHTTPレスポンスを生成する処理の直前に、bodyがstr型だったらbytes型へ変換する
             if isinstance(response.body, str):
                 response.body = response.body.encode()
-                            
-            # レスポンスラインを生成
-            response_line = self.build_response_line(response)
+
             # レスポンスヘッダーを生成
             # response_header = self.build_response_header(path, response_body, content_type)
             response_header = self.build_response_header(response, request)
+                            
+            # レスポンスラインを生成
+            response_line = self.build_response_line(response)
+
             # レスポンス全体を生成する
             # response = (response_line + response_header + "\r\n").encode() + response_body
             response_bytes = (response_line + response_header + "\r\n").encode() + response.body
@@ -167,6 +169,7 @@ class Worker(Thread):
         # - リクエストボディ(空行〜)
         # にパースする
         request_line, remain = request.split(b"\r\n", maxsplit=1)
+        # 2023.8.29 print("remain = ",remain)
         request_header, request_body = remain.split(b"\r\n\r\n", maxsplit=1)
 
         # リクエストラインを文字列に変換してパースする
@@ -181,22 +184,22 @@ class Worker(Thread):
         # return method, path, http_version, headers, request_body
         return HTTPRequest(method=method, path=path, http_version=http_version, headers=headers, body=request_body)   
 
-    def get_static_file_content(self, path: str) -> bytes:
-        """
-        リクエストpathから、staticファイルの内容を取得する
-        """
-        default_static_root = os.path.join(os.path.dirname(__file__), "../../static")
-        # settingsモジュールにSTATIC_ROOTという値が存在すればそれを取得し、なければデフォルトの値を使用
-        static_root = getattr(settings, "STATIC_ROOT", default_static_root)
+    # def get_static_file_content(self, path: str) -> bytes:
+    #     """
+    #     リクエストpathから、staticファイルの内容を取得する
+    #     """
+    #     default_static_root = os.path.join(os.path.dirname(__file__), "../../static")
+    #     # settingsモジュールにSTATIC_ROOTという値が存在すればそれを取得し、なければデフォルトの値を使用
+    #     static_root = getattr(settings, "STATIC_ROOT", default_static_root)
                 
-        # pathの先頭の/を削除し、相対パスにしておく
-        relative_path = path.lstrip("/")
-        # ファイルのpathを取得
-        # static_file_path = os.path.join(self.STATIC_ROOT, relative_path)
-        static_file_path = os.path.join(static_root, relative_path)
+    #     # pathの先頭の/を削除し、相対パスにしておく
+    #     relative_path = path.lstrip("/")
+    #     # ファイルのpathを取得
+    #     # static_file_path = os.path.join(self.STATIC_ROOT, relative_path)
+    #     static_file_path = os.path.join(static_root, relative_path)
 
-        with open(static_file_path, "rb") as f:
-            return f.read()
+    #     with open(static_file_path, "rb") as f:
+    #         return f.read()
 
     def build_response_line(self, response: HTTPResponse) -> str:
         """
@@ -240,6 +243,10 @@ class Worker(Thread):
         response_header += "Connection: Close\r\n"
         # response_header += f"Content-Type: {content_type}\r\n"
         response_header += f"Content-Type: {response.content_type}\r\n"
+        
+        # 20.23.8.28 In order to check the cookies' function
+        for header_name, header_value in response.headers.items():
+            response_header += f"{header_name}: {header_value}\r\n"
 
         return response_header
 

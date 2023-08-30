@@ -23,9 +23,8 @@ class Server:
                 (client_socket, address) = server_socket.accept() # type: ignore
                 print(f"=== Server: クライアントと接続しました remote_address: {address} ===")
                 
-                # クライアントを処理するスレッドを作成
+                # クライアントからの要求ごとにスレッド作成して、worker.pyを呼び出して実行する
                 thread = Worker(client_socket, address)
-                # スレッドを実行
                 thread.start()
             
         finally:

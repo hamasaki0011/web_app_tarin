@@ -13,7 +13,8 @@ from typing import Tuple
 import views
 from common.http.request import HTTPRequest
 from common.http.response import HTTPResponse
-from urls import URL_VIEW # type: ignore
+#from urls import URL_VIEW # type: ignore
+from common.urls.resolver import URLResolver
 
 class WorkerThread(Thread):
     # 実行ファイルのあるディレクトリ
@@ -112,7 +113,7 @@ class WorkerThread(Thread):
             response_header = self.build_response_header(response, request)
             # レスポンス全体を生成する
             # response = (response_line + response_header + "\r\n").encode() + response_body
-            response_bytes = (response_line + response_header + "\r\n").encode() + response.body
+            response_bytes = (response_line + response_header + "\r\n").encode() + response.body # type: ignore
 
             # クライアントへレスポンスを送信する
             # self.client_socket.send(response)
