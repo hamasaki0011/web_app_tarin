@@ -13,6 +13,9 @@ url_patterns = {
     # 2023.8.29 For confirming function of log-in using cookie
     URLPattern("/login", views.login),
     URLPattern("/welcome", views.welcome),
+    URLPattern('/upload', views.upload),
+    # URLPattern("/form", views.form),
+    # URLPattern("/upload_complete", views.upload_complete),
     
     # "/now": views.now,
     # "/show_request": views.show_request,

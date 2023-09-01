@@ -6,6 +6,7 @@ from pprint import pformat  # リストや辞書を整形して出力する'ppri
 from common.http.request import HTTPRequest
 from common.http.response import HTTPResponse
 from common.template.renderer import render
+import csv
 
 """
 現在時刻を表示するHTMLを生成する
@@ -159,3 +160,34 @@ def welcome(request: HTTPRequest) -> HTTPResponse:
     body = render("welcome.html", context={"username": cookies["username"]})
 
     return HTTPResponse(body=body) # type: ignore
+
+def form(request: HTTPRequest) -> HTTPResponse:
+    body = render("form.html", {})
+    return HTTPResponse(body=body) # type: ignore
+
+def upload(request: HTTPRequest) -> HTTPResponse:
+    #header = urllib.parse.parse_qs(request.header.decode())
+    body = urllib.parse.parse_qs(request.body.decode())
+    #print("header = ", header)
+    print("body = ", body)
+    file_name = body['file_name']
+    print("file_name = ", file_name)
+    
+    file = request.files['file_name']
+    print("file = ", file)
+    if not file:
+        return 'ファイルアップロードされていません.', 400
+    if file.filename.endswith('.csv'):
+        rows = []
+        csv_file = file.stream.read().decode("SHIFT-JIS")
+        csv_reader = csv.reader(csv_file.splitlines(), delimiter=',')
+        for row in csv_reader:
+            rows.append(row)
+        return render_template('table.html', rows=rows)
+    else:
+        return 'CSVファイルではありません.', 400
+    # print("request",params[])
+    # print("file_name",file_name)
+        
+    
+    return render(request, 'upoad_complete.html')

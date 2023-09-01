@@ -6,7 +6,6 @@ from common.http.response import HTTPResponse
 from common.views.static import static
 from urls import url_patterns
 
-
 class URLResolver:
     # def resolve(self, request: HTTPRequest) -> Optional[Callable[[HTTPRequest], HTTPResponse]]:
     def resolve(self, request: HTTPRequest) -> Callable[[HTTPRequest], HTTPResponse]:
@@ -19,7 +18,7 @@ class URLResolver:
             match = url_pattern.match(request.path)
             if match:
                 request.params.update(match.groupdict())
+                
                 return url_pattern.view
 
-        # return None
         return static

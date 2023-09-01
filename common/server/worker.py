@@ -63,7 +63,8 @@ class Worker(Thread):
             request_bytes = self.client_socket.recv(4096)
 
             # クライアントから送られてきたデータをファイルに書き出す
-            with open("server_recv.txt", "wb") as f:
+            # with open("server_recv.txt", "wb") as f:
+            with open("server_recv.txt", "ab") as f:
                 f.write(request_bytes)
 
             # HTTPリクエストをパースする
@@ -87,12 +88,14 @@ class Worker(Thread):
                     response = view(request)
                     break
             """
+            with open("post_request_body.txt", "ab") as f:
+                f.write(request.body)
+            
             # URL解決を行う
             view = URLResolver().resolve(request)
             
             # レスポンスを生成する
             response = view(request)
-            
             # # URL解決を試みる
             # view = URLResolver().resolve(request)
             
@@ -136,6 +139,9 @@ class Worker(Thread):
             # レスポンス全体を生成する
             # response = (response_line + response_header + "\r\n").encode() + response_body
             response_bytes = (response_line + response_header + "\r\n").encode() + response.body
+            
+            with open("server_response.txt", "ab") as f:
+                f.write(request_bytes)
 
             # クライアントへレスポンスを送信する
             # self.client_socket.send(response)

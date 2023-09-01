@@ -1,41 +1,31 @@
 HTTP/1.1 200 OK
-Date: Wed, 30 Aug 2023 06:13:37 GMT
+Date: Wed, 30 Aug 2023 23:35:18 GMT
 Host: Test_Server/0.1
-Content-Length: 1698
+Content-Length: 773
 Connection: Close
 Content-Type: text/html; charset=UTF-8
 
-<html>
-    <body>
-        <!--<form action="/show_request" method="post" enctype="multipart/form-data">-->
-        <form action="/parameters" method="post">    
-            テキストボックス: <input name="text_name" type="text"/> <br>
-            パスワード: <input name="password_name" type="password"/> <br>
-            テキストエリア: <br>
-            <textarea cols="40" name="text_area_name" rows="4"></textarea>
-            <table border="1">
-                <tr>
-                    <td>
-                        ラジオボタン: <br>
-                        <input name="radio_name" type="radio" value="radio1">1
-                        <input name="radio_name" type="radio" value="radio2">2
-                        <input name="radio_name" type="radio" value="radio3">3
-                        <input name="radio_name" type="radio" value="radio4">4
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        チェックボックス: <br>
-                        <input name="check_name" type="checkbox" value="check1">1
-                        <input name="check_name" type="checkbox" value="check2">2
-                        <input name="check_name" type="checkbox" value="check3">3
-                        <input name="check_name" type="checkbox" value="check4">4
-                    </td>
-                </tr>
-            </table>
-            <input name="hidden_name" type="hidden" value="hidden_value_日本語"/>
-            ファイルアップロード: <input name="file_name" type="file"><br>
-            <input name="submit_name" type="submit" value="送信">
-        </form>
-    </body>
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Test_Server</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <h1>This is Train_Server</h1>
+    <h3>On 8080 port</h3>
+    <img alt="logo" src="logo.png">
+    <h4>It has been built in Python virtual environment.</h4>
+    <h5>Here is the history.</h5>
+    <Pre>
+        2023.8.25 Embed a views.py module and wrap HTTPRequest' headers.<br>
+        2023.8.24 Start to create a POST request scripting.<br> 
+        2023.8.23 Add /now and /show_request pages.<br>
+        2023.8.23 Include request_line handling.<br>
+        2023.8.23 Build request handler.<br>
+        2023.8.23 Define PORT as const.<br>
+        2023.8.22 It had done refactoring.<br>
+    </pre>
+</body>
 </html>
