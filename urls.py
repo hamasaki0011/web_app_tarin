@@ -14,7 +14,6 @@ url_patterns = {
     URLPattern("/login", views.login),
     URLPattern("/welcome", views.welcome),
     URLPattern('/upload', views.upload),
-    # URLPattern("/form", views.form),
     # URLPattern("/upload_complete", views.upload_complete),
     
     # "/now": views.now,

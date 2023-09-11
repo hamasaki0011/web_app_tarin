@@ -16,6 +16,8 @@ from common.http.response import HTTPResponse
 #from urls import URL_VIEW # type: ignore
 from common.urls.resolver import URLResolver
 
+
+
 class WorkerThread(Thread):
     # 実行ファイルのあるディレクトリ
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))

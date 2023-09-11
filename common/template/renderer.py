@@ -7,5 +7,4 @@ def render(template_name: str, context: dict):
     with open(template_path) as f:
         template = f.read()
         
-    print("template = ",template)
     return template.format(**context)

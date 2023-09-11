@@ -18,6 +18,8 @@ from common.http.response import HTTPResponse
 from common.urls.resolver import URLResolver
 #from urls import URL_VIEW
 #from urls import url_patterns
+# 2023.9.11 for trial to read csv files
+import csv
 
 class Worker(Thread):
     """_summary_
@@ -61,17 +63,17 @@ class Worker(Thread):
         try:
             # クライアントから送られてきたデータを取得する
             request_bytes = self.client_socket.recv(4096)
-
-            # クライアントから送られてきたデータをファイルに書き出す
-            # with open("server_recv.txt", "wb") as f:
-            with open("server_recv.txt", "ab") as f:
-                f.write(request_bytes)
+                        
+            # # クライアントから送られてきたデータをファイルに書き出す
+            # with open("server_recv.txt", "wb") as f: # 上書き
+            # # 追記: with open("server_recv.txt", "ab") as f:
+            #     f.write(request_bytes)
 
             # HTTPリクエストをパースする
-            # method, path, http_version, request_header, request_body = self.parse_http_request(request)
-            # 2023.8.30 for confirmation print("request_bytes = ", request_bytes)
-            request = self.parse_http_request(request_bytes)
-            
+            # 返ってくるrequestには
+            # method, path, http_version, headers, body
+            # が含まれる
+            request = self.parse_http_request(request_bytes)            
             """_summary_
             pathに対応するview関数の判定をurl_patternによる適合判定に変更
             if request.path in URL_VIEW:
@@ -88,14 +90,15 @@ class Worker(Thread):
                     response = view(request)
                     break
             """
-            with open("post_request_body.txt", "ab") as f:
-                f.write(request.body)
+            # with open("post_request_body.txt", "ab") as f:
+            #     f.write(request.body)
             
             # URL解決を行う
             view = URLResolver().resolve(request)
             
-            # レスポンスを生成する
+            # レスポンスを生成する => views.pyのupload関数：line 168へ
             response = view(request)
+            
             # # URL解決を試みる
             # view = URLResolver().resolve(request)
             
@@ -140,9 +143,33 @@ class Worker(Thread):
             # response = (response_line + response_header + "\r\n").encode() + response_body
             response_bytes = (response_line + response_header + "\r\n").encode() + response.body
             
-            with open("server_response.txt", "ab") as f:
-                f.write(request_bytes)
-
+            
+            # with open("server_response.txt", "ab") as f:
+            #     f.write(request_bytes)
+                
+            # with open("testNew_17.csv", "rb") as f0:
+            #     print("worker148_read_f0", f0)
+            #     f0.read()
+            
+            # f1 = open("testNew_17.csv", "rb")
+            # # data = f1.read()
+            # data_list = f1.readlines()
+            # print("worker152_read_f1", f1)
+            # for data in data_list:
+            #     print("worker156_read_line", data, end = "")
+            # print()
+            # f1.close()
+            # print("worker155_read_data", data)
+            
+            # f2 = open("testNew_17.csv", "rb")
+            # csv_reader = csv.reader(f2) # type: ignore
+            # print("worker165_read_csv_reader = ", csv_reader)
+            # print("worker166_read_f2 = ", f2)
+            # for row in csv_reader:
+            #     print("worker168_read_row = ", row)
+            # print()
+            # f2.close()
+            
             # クライアントへレスポンスを送信する
             # self.client_socket.send(response)
             self.client_socket.send(response_bytes)
@@ -175,9 +202,10 @@ class Worker(Thread):
         # - リクエストボディ(空行〜)
         # にパースする
         request_line, remain = request.split(b"\r\n", maxsplit=1)
+                
         # 2023.8.29 print("remain = ",remain)
         request_header, request_body = remain.split(b"\r\n\r\n", maxsplit=1)
-
+        
         # リクエストラインを文字列に変換してパースする
         method, path, http_version = request_line.decode().split(" ")
         
@@ -185,9 +213,15 @@ class Worker(Thread):
         headers = {}
         for header_row in request_header.decode().split("\r\n"):
             key, value = re.split(r": *", header_row, maxsplit=1)
-            headers[key] = value        
-
-        # return method, path, http_version, headers, request_body
+            headers[key] = value
+        
+        # print("headers = ", headers)
+        # print("Cookie = ", headers['Cookie'])
+        
+        # if method == "POST":
+        #     print("Content-Type = ", headers['Content-Type'])
+        #     print("body(worker.py) = ", request_body)
+        
         return HTTPRequest(method=method, path=path, http_version=http_version, headers=headers, body=request_body)   
 
     # def get_static_file_content(self, path: str) -> bytes:

@@ -1,4 +1,4 @@
-#import textwrap
+#import textwra
 import urllib.parse
 from datetime import datetime
 from pprint import pformat  # リストや辞書を整形して出力する'pprint'を使用する
@@ -7,6 +7,13 @@ from common.http.request import HTTPRequest
 from common.http.response import HTTPResponse
 from common.template.renderer import render
 import csv
+# For multipart
+import cgi
+#import base64
+import io
+from cgi import FieldStorage
+
+# import requests
 
 """
 現在時刻を表示するHTMLを生成する
@@ -161,33 +168,140 @@ def welcome(request: HTTPRequest) -> HTTPResponse:
 
     return HTTPResponse(body=body) # type: ignore
 
-def form(request: HTTPRequest) -> HTTPResponse:
-    body = render("form.html", {})
-    return HTTPResponse(body=body) # type: ignore
+def upload(request: HTTPRequest) -> HTTPResponse: # type: ignore
+    # GETリクエストの場合は、405を返す
+    if request.method == "GET":
+        body = b"<html><body><h1>405 Method Not Allowed</h1></body></html>"
+        return HTTPResponse(body=body, status_code=405)
 
-def upload(request: HTTPRequest) -> HTTPResponse:
-    #header = urllib.parse.parse_qs(request.header.decode())
-    body = urllib.parse.parse_qs(request.body.decode())
-    #print("header = ", header)
-    print("body = ", body)
-    file_name = body['file_name']
-    print("file_name = ", file_name)
+    # POTリクエストの場合は、アップロードしたfileを開く
+    elif request.method == "POST":
+        """_summary_
+        5つの変数(method: str, path: str, http_version: str, request_header: dict, request_body: bytes)を
+        HTTPRequestでオブジェクト化
+        これらは見当たらない？
+        # print("views: HTTPRequest = ", request.status_code)
     
-    file = request.files['file_name']
-    print("file = ", file)
-    if not file:
-        return 'ファイルアップロードされていません.', 400
-    if file.filename.endswith('.csv'):
-        rows = []
-        csv_file = file.stream.read().decode("SHIFT-JIS")
-        csv_reader = csv.reader(csv_file.splitlines(), delimiter=',')
-        for row in csv_reader:
-            rows.append(row)
-        return render_template('table.html', rows=rows)
-    else:
-        return 'CSVファイルではありません.', 400
-    # print("request",params[])
-    # print("file_name",file_name)
+        ※ちなみに、multipart/form-data形式で送られてきた内容をパースするには、
+        pythonではcgiモジュールのFieldStorageというクラスを利用します。
+        """
+        file, file_name = parse_multipart_form(request)
         
+        print("view190_file", file)
+        
+        rows = []
+        csv_reader = csv.reader(file.splitlines(), delimiter=',')
+        print("view193_csv_reader = ", csv_reader)
+        for row in csv_reader:
+            print("view194_row = ", row)
+            rows.append(row)
+            
+        # file = open(file_name, "rb")        
+        # data_list = file.readlines()
+        # print("view193_data_list", data_list)
+        
+        # for data in data_list:
+        #     print("view196_data", data, end ="")
+        # print()
+            
+        # print("views190_data_list",data_list)
+        # for data in data_list:
+        #     print("views193_data", data, end = "")
+        # print()
+        # File.close()
+        # header = request.headers
+        # print("views_186: headers = ", header)
+        # print("views_187: content_type = ", header['Content-Type'])
+        # print("views_188: cookie = ", header['Cookie'])
+        # body = request.body.decode() 
+        # print("views_190: request.body = ", body)
+        # files = request.files.decode()
+        # print("views_191: file = ", type(files))
+        # bodyはstr
+        # print("views_193: body = ", body.items(),type(body))
+        
+        # post_params = urllib.parse.parse_qs(request.body.decode())
+        # print("post_params", post_params)
+        # response_body = textwrap.dedent(html).encode()
+        # body = textwrap.dedent(html).encode()
+        # # Content-Typeを指定
+        # content_type = "text/html; charset=UTF-8"
+        
+        # # header = urllib.parse.parse_qs(request.header.decode())
+        # contents = urllib.parse.parse_qs(request.body.decode())
+        
+        # # with open("post_request_body.text", "wb") as f:
+        # #     f.write(body) # type: ignore
     
-    return render(request, 'upoad_complete.html')
+        # file = request.FILE
+    
+        # print("file = ", file)
+        # if not file:
+        #     return 'ファイルアップロードされていません.', 400
+        # if file.filename.endswith('.csv'):
+        #     rows = []
+        #     csv_file = file.stream.read().decode("SHIFT-JIS")
+        #     csv_reader = csv.reader(csv_file.splitlines(), delimiter=',')
+        #     for row in csv_reader:
+        #         rows.append(row)
+        #     return render_template('table.html', rows=rows)
+        # else:
+        #     return 'CSVファイルではありません.', 400
+        # # print("request",params[])
+        # # print("file_name",file_name)
+        
+        context = {
+            "request": request, 
+            "headers": pformat(request.headers), 
+            "body": request.body.decode("utf-8", "ignore"),
+            "filename": file_name,
+            "file": file,
+            "rows": rows,
+        }
+        body = render("upload.html", context)
+        
+        return HTTPResponse(body=body) # type: ignore
+    
+def parse_multipart_form(request: HTTPRequest):
+    # cgi.FieldStorageのバッファーポインターを設定
+    fp = io.BytesIO(request.body)
+    # print("view242_fp = ", fp, type(fp))
+    environ = {'REQUEST_METHOD': 'POST'}
+    headers = {
+        'content-type': request.headers['Content-Type'],
+        'content-length': request.headers['Content-Length'],
+    }
+    form = cgi.FieldStorage(fp = fp, environ = environ, headers = headers)
+    print("views259_form = ", form, type(form))
+    print("views260_form.list = ", form.list, type(form.list), len(form.list))
+    
+    list = form.getlist("name")
+    print("view263_list = ", list)
+    
+    for f  in form.list:
+        if f.name == "file_name":
+            print("views264_f.name = ", f.name)             # file_name
+            print("views265_f.filename = ", f.filename)     # testNew_14.csv
+            print("views266_f.type = ", f.type)             # text/csv = 
+            print("views267_f.value = ", f.value)           #
+        # print("views263_form.list = ", f.name, f.filename, f.type, f.value)
+        # print("views264_f.name = ", f.name)
+        # print("views265_f.filename = ", f.filename)
+        # print("views266_f.type = ", f.type)
+        # print("views267_f.value = ", f.value)
+    # file: str
+    # file_name: str
+    files = form['file_name']
+    file = files.value.decode()
+    file_name =files.filename
+    print('view280_file = ',files)
+    print('view281_file_name = ',file_name)
+    # if form.value != None:
+    
+    #     print("view265_form.value = ", form.value)
+    #     for f in form.value:
+    #         if f.filename:
+    #             file = f.value.decode()
+    #             file_name = f.filename
+    
+    return file, file_name

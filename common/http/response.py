@@ -1,5 +1,8 @@
 from typing import Optional, Union, Dict
 
+"""_summary_ HTTP Responseを表現するクラス
+
+"""
 class HTTPResponse:
     status_code: int
     headers: dict

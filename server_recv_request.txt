@@ -1,0 +1,60 @@
+------WebKitFormBoundaryUBmRidcLWEbNBU6A
+Content-Disposition: form-data; name="hidden_name"
+
+hidden_value_日本語
+------WebKitFormBoundaryUBmRidcLWEbNBU6A
+Content-Disposition: form-data; name="file_name"; filename=""
+Content-Type: application/octet-stream
+
+
+------WebKitFormBoundaryUBmRidcLWEbNBU6A--
+------WebKitFormBoundaryUBmRidcLWEbNBU6A
+Content-Disposition: form-data; name="hidden_name"
+
+hidden_value_日本語
+------WebKitFormBoundaryUBmRidcLWEbNBU6A
+Content-Disposition: form-data; name="file_name"; filename=""
+Content-Type: application/octet-stream
+
+
+------WebKitFormBoundaryUBmRidcLWEbNBU6A--
+------WebKitFormBoundaryBmzMAjHppG6R9p1o
+Content-Disposition: form-data; name="hidden_name"
+
+hidden_value_日本語
+------WebKitFormBoundaryBmzMAjHppG6R9p1o
+Content-Disposition: form-data; name="file_name"; filename="testNew_3.csv"
+Content-Type: text/csv
+
+measured_date,measured_value,point_id,place_id
+2023-3-20 09:31:00,18.4,1,1
+2023-3-20 09:31:00,22.2,2,1
+2023-3-20 09:31:00,120.4,3,1
+2023-3-20 09:31:00,1.1,4,1
+2023-3-20 09:31:00,24.0,5,2
+2023-3-20 09:31:00,14.4,6,2
+2023-3-20 09:31:00,10.1,7,2
+2023-3-20 09:31:00,17.5,8,3
+2023-3-20 09:31:00,15.3,9,3
+
+------WebKitFormBoundaryBmzMAjHppG6R9p1o--
+------WebKitFormBoundarygynL4tb2Kz2QFxr8
+Content-Disposition: form-data; name="hidden_name"
+
+hidden_value_日本語
+------WebKitFormBoundarygynL4tb2Kz2QFxr8
+Content-Disposition: form-data; name="file_name"; filename="testNew_5.csv"
+Content-Type: text/csv
+
+measured_date,measured_value,point_id,place_id
+2023-3-20 10:31:00,18.2,1,1
+2023-3-20 10:31:00,22.0,2,1
+2023-3-20 10:31:00,120.5,3,1
+2023-3-20 10:31:00,1.3,4,1
+2023-3-20 10:31:00,24.5,5,2
+2023-3-20 10:31:00,14.4,6,2
+2023-3-20 10:31:00,10.2,7,2
+2023-3-20 10:31:00,17.4,8,3
+2023-3-20 10:31:00,15.1,9,3
+
+------WebKitFormBoundarygynL4tb2Kz2QFxr8--

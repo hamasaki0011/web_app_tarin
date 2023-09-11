@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>FILE CSV</title>
+    </head>
+    <body>
+        <div>
+            <h2>CSVデータのアップロード完了</h2>
+            <p>{filename}</p>
+            <p>{file}</p>
+            <p>{{ rows }}</p>
+        </div>
+        <div>
+            <h2>HTTP Requestの詳細</h2>
+            <h3>Request Line:</h3>
+            <pre>{request.method} {request.path} {request.http_version}</pre>
+            <h3>Headers:</h3>
+            <pre>{headers}</pre>
+            <h3>Body:</h3>
+            <pre>{body}</pre>
+        </div>
+    </body>
+</html>
